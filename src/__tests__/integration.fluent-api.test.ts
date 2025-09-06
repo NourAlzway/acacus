@@ -90,7 +90,7 @@ describe('integration - fluent API', () => {
     expect(typeof reset).toBe('function');
   });
 
-  it('should create store with effects', () => {
+  it('should create store with actions', () => {
     // Arrange
     const initialState = {
       count: 0,
@@ -99,20 +99,12 @@ describe('integration - fluent API', () => {
     };
 
     const store = createStore(initialState)
-      .effect('initialize', (state, helpers) => {
-        helpers.set({ initialized: true });
-      })
       .action('increment', state => ({ count: state.count + 1 }))
-      .effect('logger', (state, helpers) => {
-        helpers.set({
-          logs: [...state.logs, `${new Date().toISOString()}: Initialized`],
-        });
-      })
       .build();
 
     // Act
     let state = store.get(s => s);
-    expect(state.initialized).toBe(true);
+    expect(state.initialized).toBe(false);
 
     const increment = store.use(actions => actions.increment);
     increment();
@@ -120,11 +112,10 @@ describe('integration - fluent API', () => {
     // Assert
     state = store.get(s => s);
     expect(state.count).toBe(1);
-    expect(state.logs).toHaveLength(1);
-    expect(state.logs[0]).toContain('Initialized');
+    expect(state.logs).toHaveLength(0);
   });
 
-  it('should create store with mixed actions and effects', () => {
+  it('should create store with multiple actions', () => {
     // Arrange
     const initialState = {
       counter: 0,
@@ -134,9 +125,6 @@ describe('integration - fluent API', () => {
     };
 
     const store = createStore(initialState)
-      .effect('init', (state, helpers) => {
-        helpers.set({ initialized: true, lastAction: 'initialized' });
-      })
       .action('increment', state => ({
         counter: state.counter + 1,
         lastAction: 'increment',
@@ -156,8 +144,8 @@ describe('integration - fluent API', () => {
 
     // Act
     let state = store.get(s => s);
-    expect(state.initialized).toBe(true);
-    expect(state.lastAction).toBe('initialized');
+    expect(state.initialized).toBe(false);
+    expect(state.lastAction).toBe('none');
 
     const increment = store.use(actions => actions.increment);
     const addUser = store.use(actions => actions.addUser);
@@ -184,7 +172,7 @@ describe('integration - fluent API', () => {
     expect(state.users[2]).toEqual({ id: 3, name: 'User Three' });
 
     expect(state.counter).toBe(1);
-    expect(state.initialized).toBe(true);
+    expect(state.initialized).toBe(false);
     expect(state.lastAction).toBe('batchAddUsers');
   });
 });

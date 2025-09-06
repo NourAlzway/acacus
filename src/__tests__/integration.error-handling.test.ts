@@ -34,25 +34,6 @@ describe('integration - error handling', () => {
     );
   });
 
-  it('should handle effect errors', () => {
-    // Arrange
-    const errorHandler = jest.fn();
-    const config: StoreConfig = { errorHandler };
-
-    // Act
-    createStore({ count: 0 }, config)
-      .effect('errorEffect', () => {
-        throw new Error('Effect error');
-      })
-      .build();
-
-    // Assert
-    expect(errorHandler).toHaveBeenCalledWith(
-      expect.objectContaining({ message: 'Effect error' }),
-      'Effect errorEffect'
-    );
-  });
-
   it('should handle listener errors', () => {
     // Arrange
     const errorHandler = jest.fn();

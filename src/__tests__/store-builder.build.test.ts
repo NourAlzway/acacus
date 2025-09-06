@@ -77,20 +77,15 @@ describe('store-builder - build methods', () => {
         count: state.count + 1,
       }))
       .asyncAction('fetchData', async (): Promise<string> => 'async data')
-      .effect('setReady', (_state, helpers): void => {
-        helpers.set({ ready: true });
-      })
       .build();
 
     // Assert
     const increment = store.use(actions => actions.increment);
     const fetchData = store.use(actions => actions.fetchData);
-    const setReady = store.use(actions => (actions as any).setReady);
     const state = store.get(s => s);
 
     expect(typeof increment).toBe('function');
     expect(typeof fetchData).toBe('function');
-    expect(typeof setReady).toBe('function');
-    expect(state.ready).toBe(true);
+    expect(state.ready).toBe(false);
   });
 });

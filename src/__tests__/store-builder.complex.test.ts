@@ -35,9 +35,6 @@ describe('store-builder - complex scenarios', () => {
 
     // Act
     const store = new StoreBuilderImpl(initialState)
-      .effect('init', (_state, helpers): void => {
-        helpers.set({ initialized: true });
-      })
       .action(
         'addUser',
         (state: typeof initialState, user: { id: number; name: string }) => ({
@@ -58,15 +55,11 @@ describe('store-builder - complex scenarios', () => {
           ];
         }
       )
-      .effect('logCount', (_state, helpers): void => {
-        helpers.get();
-        helpers.set({ loading: false });
-      })
       .build();
 
     // Assert
     const initializedState = store.get(s => ({ initialized: s.initialized }));
-    expect(initializedState.initialized).toBe(true);
+    expect(initializedState.initialized).toBe(false);
 
     const addUser = store.use(actions => actions.addUser);
     const clearUsers = store.use(actions => actions.clearUsers);
