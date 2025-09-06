@@ -3,7 +3,6 @@ import {
   StoreInternal,
   CallableStore,
   StrictActionFn,
-  StrictEffectFn,
   StrictAsyncActionFn,
   AsyncState,
   StoreConfig,
@@ -18,7 +17,6 @@ import {
   createAsyncAction,
   initializeAsyncState,
 } from './async-action-handler';
-import { executeEffect } from './effect-handler';
 import { createCallableStore } from './callable-store';
 import { createStoreHook } from './store-hook';
 
@@ -91,25 +89,6 @@ export class StoreBuilderImpl<
       Actions & SafeRecord<K, (...args: Args) => Promise<void>>
     >;
     return this as NewBuilder;
-  }
-
-  effect<K extends string>(
-    name: K,
-    fn: StrictEffectFn<T>
-  ): StoreBuilder<T, Actions> {
-    if (!isFunction(fn)) {
-      throw new TypeError(`Effect '${name}' must be a function`);
-    }
-
-    // Type-safe assignment
-    const typedEffects = this.store.effects as SafeRecord<
-      string,
-      StrictEffectFn<T>
-    >;
-    typedEffects[name] = fn;
-
-    executeEffect(this.store, name, fn);
-    return this;
   }
 
   asHook(): () => Readonly<T> & Actions {

@@ -63,7 +63,6 @@ export function createStoreInternal<T extends ValidStateType>(
     setState,
     subscribe,
     actions: {},
-    effects: {},
     config,
   };
 

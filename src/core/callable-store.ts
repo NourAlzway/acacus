@@ -3,13 +3,10 @@ import {
   CallableStore,
   StoreInternal,
   ValidStateType,
-  StrictEffectFn,
-  SafeRecord,
   isFunction,
   StateSelector,
   ActionSelector,
 } from '../types';
-import { createBoundEffect } from './effect-handler';
 
 /**
  * Creates a callable store interface from an internal store implementation
@@ -17,22 +14,9 @@ import { createBoundEffect } from './effect-handler';
 export function createCallableStore<T extends ValidStateType, Actions>(
   store: StoreInternal<T>
 ): CallableStore<T, Actions> {
-  // Bind effects as well as actions
-  const boundEffects: SafeRecord<string, (...args: unknown[]) => void> = {};
-  Object.entries(store.effects).forEach(([name, effect]) => {
-    if (isFunction(effect)) {
-      boundEffects[name] = createBoundEffect(
-        store,
-        name,
-        effect as StrictEffectFn<T>
-      );
-    }
-  });
-
-  // Create the combined actions + effects object
+  // Create actions object
   const createActions = (): Actions => {
-    const combined = Object.assign({}, store.actions, boundEffects);
-    return combined as Actions;
+    return store.actions as Actions;
   };
 
   // Create a callable store with new get/use pattern
@@ -79,7 +63,6 @@ export function createCallableStore<T extends ValidStateType, Actions>(
 
     // Add remaining StoreInternal properties for compatibility
     actions: store.actions,
-    effects: store.effects,
     config: store.config,
   };
 
