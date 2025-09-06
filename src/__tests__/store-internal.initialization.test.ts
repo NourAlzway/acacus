@@ -16,7 +16,6 @@ describe('store-internal - initialization', () => {
     // Assert
     expect(store.getState()).toEqual(initialState);
     expect(store.actions).toEqual({});
-    expect(store.effects).toEqual({});
     expect(store.config).toEqual({});
   });
 

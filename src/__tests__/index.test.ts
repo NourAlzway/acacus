@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 
-import { createStore, useStore, deepEqual, deepClone } from '../index';
+import { createStore, deepEqual, deepClone } from '../index';
 
 // eslint-disable-next-line no-console
 const originalConsoleWarn = console.warn;
@@ -37,7 +37,6 @@ describe('index - main exports', () => {
 
   it('should export utility functions', () => {
     // Arrange & Act & Assert
-    expect(typeof useStore).toBe('function');
     expect(typeof deepEqual).toBe('function');
     expect(typeof deepClone).toBe('function');
   });
@@ -62,24 +61,37 @@ describe('index - main exports', () => {
     expect(finalState.message).toBe('world');
   });
 
-  it('should support effects that run during initialization', () => {
+  it('should support state subscriptions for side effects', () => {
     // Arrange
-    const initialState = { count: 0, initialized: false };
+    const initialState = { count: 0, logs: [] as string[] };
+    const logEntries: string[] = [];
+
     const store = createStore(initialState)
       .action('increment', state => ({ count: state.count + 1 }))
-      .effect('initialize', (_, helpers) => {
-        helpers.set({ initialized: true });
-      })
+      .action('addLog', (state, message: string) => ({
+        logs: [...state.logs, message],
+      }))
       .build();
 
+    // Subscribe to log count changes
+    store.subscribe((state, prevState) => {
+      if (state.count !== prevState.count) {
+        logEntries.push(
+          `Count changed from ${prevState.count} to ${state.count}`
+        );
+      }
+    });
+
     // Act
-    const state = store.get(s => s);
     const increment = store.use(actions => actions.increment);
+    increment();
     increment();
 
     // Assert
-    expect(state.initialized).toBe(true);
-    expect(state.count).toBe(0);
-    expect(store.get(s => s.count)).toBe(1);
+    expect(store.get(s => s.count)).toBe(2);
+    expect(logEntries).toEqual([
+      'Count changed from 0 to 1',
+      'Count changed from 1 to 2',
+    ]);
   });
 });
