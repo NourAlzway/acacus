@@ -33,11 +33,14 @@ describe('callable-store - working with effects', () => {
 
     const callableStore = createCallableStore(store);
 
-    const storeInstance = callableStore();
+    // Assert - effects should be available through use method
+    const updateMessage = callableStore.use(
+      actions => (actions as any).updateMessage
+    );
+    const increment = callableStore.use(actions => (actions as any).increment);
 
-    // Assert
-    expect(typeof (storeInstance as any).updateMessage).toBe('function');
-    expect(typeof (storeInstance as any).increment).toBe('function');
+    expect(typeof updateMessage).toBe('function');
+    expect(typeof increment).toBe('function');
   });
 
   it('should execute bound effects', () => {
@@ -53,11 +56,13 @@ describe('callable-store - working with effects', () => {
 
     const callableStore = createCallableStore(store);
 
-    const storeInstance = callableStore();
-    (storeInstance as any).setMessage('updated');
+    const setMessage = callableStore.use(
+      actions => (actions as any).setMessage
+    );
+    setMessage('updated');
 
     // Assert
-    const state = callableStore.use(s => s);
+    const state = callableStore.get(s => s);
     expect(state.message).toBe('updated');
   });
 });

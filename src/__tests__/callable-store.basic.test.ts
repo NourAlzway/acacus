@@ -23,7 +23,8 @@ describe('callable-store - basic functionality', () => {
     const callableStore = createCallableStore(store);
 
     // Assert
-    expect(typeof callableStore).toBe('function');
+    expect(typeof callableStore).toBe('object');
+    expect(typeof callableStore.get).toBe('function');
     expect(typeof callableStore.use).toBe('function');
     expect(typeof callableStore.subscribe).toBe('function');
   });
@@ -35,7 +36,7 @@ describe('callable-store - basic functionality', () => {
     const callableStore = createCallableStore(store);
 
     // Act
-    const state = callableStore();
+    const state = callableStore.get(s => s);
 
     // Assert
     expect(state).toEqual(initialState);
@@ -48,8 +49,8 @@ describe('callable-store - basic functionality', () => {
     const callableStore = createCallableStore(store);
 
     // Act
-    const count = callableStore(state => state.count);
-    const name = callableStore(state => state.name);
+    const count = callableStore.get(state => state.count);
+    const name = callableStore.get(state => state.name);
 
     // Assert
     expect(count).toBe(42);
@@ -73,11 +74,11 @@ describe('callable-store - basic functionality', () => {
       { increment: () => void }
     >(store);
 
-    const storeInstance = callableStore();
+    const state = callableStore.get(s => s);
+    const increment = callableStore.use(actions => actions.increment);
 
-    expect(storeInstance).toHaveProperty('count', 0);
-    expect(storeInstance).toHaveProperty('increment');
-    expect(typeof storeInstance.increment).toBe('function');
+    expect(state).toHaveProperty('count', 0);
+    expect(typeof increment).toBe('function');
   });
 
   it('should include effects in returned state', () => {
@@ -95,10 +96,10 @@ describe('callable-store - basic functionality', () => {
 
     const callableStore = createCallableStore(store);
 
-    const storeInstance = callableStore();
+    const state = callableStore.get(s => s);
+    const log = callableStore.use(actions => (actions as any).log);
 
-    expect(storeInstance).toHaveProperty('message', 'initial');
-    expect(storeInstance).toHaveProperty('log');
-    expect(typeof (storeInstance as any).log).toBe('function');
+    expect(state).toHaveProperty('message', 'initial');
+    expect(typeof log).toBe('function');
   });
 });

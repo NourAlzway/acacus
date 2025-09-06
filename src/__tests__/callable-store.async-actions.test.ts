@@ -37,7 +37,7 @@ describe('callable-store - working with async actions', () => {
       { fetchUsers: (...args: any[]) => Promise<void> }
     >(store as any);
 
-    const { fetchUsers } = callableStore();
+    const fetchUsers = callableStore.use(actions => actions.fetchUsers);
 
     await fetchUsers();
     // Assert
@@ -66,7 +66,7 @@ describe('callable-store - working with async actions', () => {
       { failingFetch: (...args: any[]) => Promise<void> }
     >(store as any);
 
-    const { failingFetch } = callableStore();
+    const failingFetch = callableStore.use(actions => actions.failingFetch);
     await failingFetch();
 
     // Assert

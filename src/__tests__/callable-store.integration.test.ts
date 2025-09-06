@@ -58,22 +58,26 @@ describe('callable-store - complex integration scenarios', () => {
       }
     >(store);
 
-    const { increment, addUser, reset } = callableStore();
-    const storeInstance = callableStore();
+    const increment = callableStore.use(actions => actions.increment);
+    const addUser = callableStore.use(actions => actions.addUser);
+    const reset = callableStore.use(actions => actions.reset);
+    const logMessage = callableStore.use(
+      actions => (actions as any).logMessage
+    );
 
     increment();
     addUser({ id: 1, name: 'John' });
 
-    (storeInstance as any).logMessage('effect message');
+    logMessage('effect message');
 
     // Assert
-    let finalState = callableStore.use(s => s);
+    let finalState = callableStore.get(s => s);
     expect(finalState.count).toBe(1);
     expect(finalState.users).toEqual([{ id: 1, name: 'John' }]);
     expect(finalState.message).toBe('effect message');
 
     reset();
-    finalState = callableStore.use(s => s);
+    finalState = callableStore.get(s => s);
     expect(finalState.count).toBe(0);
     expect(finalState.users).toEqual([]);
     expect(finalState.message).toBe('reset');

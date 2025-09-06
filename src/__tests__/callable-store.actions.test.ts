@@ -32,11 +32,11 @@ describe('callable-store - working with actions', () => {
       { increment: (...args: any[]) => void }
     >(store);
 
-    const { increment } = callableStore();
+    const increment = callableStore.use(actions => actions.increment);
     increment(5);
 
     // Assert
-    const state = callableStore.use(s => s);
+    const state = callableStore.get(s => s);
     expect(state.count).toBe(5);
   });
 
@@ -80,16 +80,18 @@ describe('callable-store - working with actions', () => {
     >(store);
 
     // Act
-    const { increment, setName, reset } = callableStore();
+    const increment = callableStore.use(actions => actions.increment);
+    const setName = callableStore.use(actions => actions.setName);
+    const reset = callableStore.use(actions => actions.reset);
     increment();
     setName('updated');
 
     // Assert
-    let state = callableStore.use(s => ({ count: s.count, name: s.name }));
+    let state = callableStore.get(s => ({ count: s.count, name: s.name }));
     expect(state).toEqual({ count: 1, name: 'updated' });
 
     reset();
-    state = callableStore.use(s => ({ count: s.count, name: s.name }));
+    state = callableStore.get(s => ({ count: s.count, name: s.name }));
     expect(state).toEqual({ count: 0, name: 'initial' });
 
     expect(typeof increment).toBe('function');

@@ -27,15 +27,15 @@ describe('callable-store - selector functionality', () => {
     // Act
     const callableStore = createCallableStore(store);
 
-    const activeUsers = callableStore(state =>
+    const activeUsers = callableStore.get(state =>
       state.users.filter(user => user.active)
     );
 
-    const userNames = callableStore(state =>
+    const userNames = callableStore.get(state =>
       state.users.map(user => user.name)
     );
 
-    const userCount = callableStore(state => state.users.length);
+    const userCount = callableStore.get(state => state.users.length);
 
     // Assert
     expect(activeUsers).toEqual([
@@ -64,19 +64,12 @@ describe('callable-store - selector functionality', () => {
       { increment: () => void }
     >(store);
 
-    const hasIncrementAction = callableStore(
-      state => typeof state.increment === 'function'
-    );
-    const stateWithActionInfo = callableStore(state => ({
-      count: state.count,
-      hasActions: typeof state.increment === 'function',
-    }));
+    // Get state and actions separately
+    const count = callableStore.get(state => state.count);
+    const increment = callableStore.use(actions => actions.increment);
 
-    // Assert
-    expect(hasIncrementAction).toBe(true);
-    expect(stateWithActionInfo).toEqual({
-      count: 0,
-      hasActions: true,
-    });
+    // Assert that we can access state and actions separately
+    expect(count).toBe(0);
+    expect(typeof increment).toBe('function');
   });
 });

@@ -13,8 +13,8 @@ jest.mock('react', () => ({
 import { createCallableStore } from '../core/callable-store';
 import { createStoreInternal } from '../core/store-internal';
 
-describe('callable-store - React hooks integration', () => {
-  it('should handle hook failures gracefully in non-React environments', () => {
+describe('callable-store - React hooks integration with get pattern', () => {
+  it('should handle hook failures gracefully in get method', () => {
     // Arrange
     mockUseSyncExternalStore.mockImplementation(() => {
       throw new Error('Hooks can only be called inside function components');
@@ -27,14 +27,14 @@ describe('callable-store - React hooks integration', () => {
     const store = createStoreInternal(initialState);
     const callableStore = createCallableStore(store);
 
-    const state = callableStore();
+    const state = callableStore.get(state => state);
 
     // Assert
     expect(state).toEqual(initialState);
     if (process.env.NODE_ENV !== 'production') {
       expect(consoleSpy).toHaveBeenCalledWith(
         expect.stringContaining(
-          '[Store Warning] store() could not use React hooks'
+          '[Store Warning] store.get() could not use React hooks'
         )
       );
     }
@@ -59,8 +59,8 @@ describe('callable-store - React hooks integration', () => {
     const store = createStoreInternal(initialState);
     const callableStore = createCallableStore(store);
 
-    const count = callableStore(state => state.count);
-    const name = callableStore(state => state.name);
+    const count = callableStore.get(state => state.count);
+    const name = callableStore.get(state => state.name);
 
     // Assert
     expect(count).toBe(42);
@@ -70,5 +70,42 @@ describe('callable-store - React hooks integration', () => {
     mockUseSyncExternalStore.mockImplementation(
       (_subscribe: any, getSnapshot: any) => getSnapshot()
     );
+  });
+
+  it('should use React hooks when available', () => {
+    // Arrange
+    const initialState = { count: 0 };
+    const store = createStoreInternal(initialState);
+    const callableStore = createCallableStore(store);
+
+    // Act
+    const count = callableStore.get(state => state.count);
+
+    // Assert
+    expect(count).toBe(0);
+    expect(mockUseSyncExternalStore).toHaveBeenCalled();
+  });
+
+  it('should not use hooks for use method (actions only)', () => {
+    // Arrange
+    const initialState = { count: 0 };
+    const store = createStoreInternal(initialState);
+    store.actions.increment = jest.fn();
+
+    const callableStore = createCallableStore<
+      typeof initialState,
+      { increment: () => void }
+    >(store);
+
+    // Reset mock to track calls
+    mockUseSyncExternalStore.mockClear();
+
+    // Act
+    const increment = callableStore.use(actions => actions.increment);
+
+    // Assert
+    expect(typeof increment).toBe('function');
+    // use method should not call React hooks since it's only for actions
+    expect(mockUseSyncExternalStore).not.toHaveBeenCalled();
   });
 });

@@ -30,7 +30,9 @@ describe('index - main exports', () => {
 
     // Assert
     expect(typeof createStore).toBe('function');
-    expect(typeof store).toBe('function');
+    expect(typeof store).toBe('object');
+    expect(typeof store.get).toBe('function');
+    expect(typeof store.use).toBe('function');
   });
 
   it('should export utility functions', () => {
@@ -49,12 +51,13 @@ describe('index - main exports', () => {
       .build();
 
     // Act
-    const { increment, setMessage } = store();
+    const increment = store.use(actions => actions.increment);
+    const setMessage = store.use(actions => actions.setMessage);
     increment();
     setMessage('world');
 
     // Assert
-    const finalState = store.use(s => s);
+    const finalState = store.get(s => s);
     expect(finalState.count).toBe(1);
     expect(finalState.message).toBe('world');
   });
@@ -70,13 +73,13 @@ describe('index - main exports', () => {
       .build();
 
     // Act
-    const state = store.use(s => s);
-    const { increment } = store();
+    const state = store.get(s => s);
+    const increment = store.use(actions => actions.increment);
     increment();
 
     // Assert
     expect(state.initialized).toBe(true);
     expect(state.count).toBe(0);
-    expect(store.use(s => s.count)).toBe(1);
+    expect(store.get(s => s.count)).toBe(1);
   });
 });
