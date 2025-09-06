@@ -18,7 +18,6 @@ import {
   initializeAsyncState,
 } from './async-action-handler';
 import { createCallableStore } from './callable-store';
-import { createStoreHook } from './store-hook';
 
 /**
  * Concrete implementation of the store builder with fluent API methods
@@ -89,10 +88,6 @@ export class StoreBuilderImpl<
       Actions & SafeRecord<K, (...args: Args) => Promise<void>>
     >;
     return this as NewBuilder;
-  }
-
-  asHook(): () => Readonly<T> & Actions {
-    return createStoreHook<T, Actions>(this.store);
   }
 
   build(): CallableStore<T, Actions> {
