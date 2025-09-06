@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.0
+
+### Minor Changes
+
+- 4db40a0: clean up the code and remove the old and unused functions and apis
+
 ## 0.6.0
 
 ### Minor Changes
