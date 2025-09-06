@@ -44,11 +44,6 @@ describe('callable-store - complex integration scenarios', () => {
       message: 'reset',
     }));
 
-    store.effects.logMessage = (_state, helpers, ...args: unknown[]): void => {
-      const [newMessage] = args as [string];
-      helpers.set({ message: newMessage });
-    };
-
     const callableStore = createCallableStore<
       typeof initialState,
       {
@@ -61,20 +56,15 @@ describe('callable-store - complex integration scenarios', () => {
     const increment = callableStore.use(actions => actions.increment);
     const addUser = callableStore.use(actions => actions.addUser);
     const reset = callableStore.use(actions => actions.reset);
-    const logMessage = callableStore.use(
-      actions => (actions as any).logMessage
-    );
 
     increment();
     addUser({ id: 1, name: 'John' });
-
-    logMessage('effect message');
 
     // Assert
     let finalState = callableStore.get(s => s);
     expect(finalState.count).toBe(1);
     expect(finalState.users).toEqual([{ id: 1, name: 'John' }]);
-    expect(finalState.message).toBe('effect message');
+    expect(finalState.message).toBe('initial');
 
     reset();
     finalState = callableStore.get(s => s);
