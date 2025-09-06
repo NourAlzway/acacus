@@ -42,12 +42,6 @@ export type StrictAsyncActionFn<
   Args extends ValidActionArgs,
   R,
 > = AsyncActionFn<T, Args, R>;
-export type StrictEffectFn<T> = EffectFn<T>;
-
-export type EffectFn<T> = (
-  state: Readonly<T>,
-  helpers: EffectHelpers<T>
-) => void | Promise<void>;
 
 export type AsyncActionFn<T, Args extends ValidActionArgs, R> = (
   state: Readonly<T>,
@@ -63,11 +57,6 @@ export interface AsyncState<T> {
 export type ValidStateType = object;
 
 export type ValidActionArgs = readonly unknown[];
-
-export interface EffectHelpers<T> {
-  set: (newState: Partial<T> | T) => void;
-  get: () => Readonly<T>;
-}
 
 export type ErrorHandler = (
   error: Error,
@@ -91,7 +80,6 @@ export interface StoreInternal<T extends ValidStateType> {
     string,
     (...args: ValidActionArgs) => void | Promise<void>
   >;
-  readonly effects: SafeRecord<string, EffectFn<T>>;
   readonly config: Readonly<StoreConfig>;
 }
 
@@ -122,7 +110,7 @@ export type CallableStore<
   // Keep subscription for direct subscriptions
   subscribe: (listener: Listener<T>) => () => void;
 
-  // Add StoreInternal methods for compatibility with useStore
+  // Add StoreInternal methods for compatibility
   getState: () => Readonly<T>;
 } & Omit<StoreInternal<T>, 'getState' | 'setState' | 'subscribe'>;
 
@@ -143,11 +131,6 @@ export interface StoreBuilder<
     Actions & SafeRecord<K, (...args: Args) => Promise<void>>
   >;
 
-  effect<K extends string>(
-    name: K,
-    fn: StrictEffectFn<T>
-  ): StoreBuilder<T, Actions>;
-
   asHook(): () => Readonly<T> & Actions;
 
   build(): CallableStore<T, Actions>;
@@ -157,7 +140,3 @@ export interface StoreHook<T extends ValidStateType> {
   (): Readonly<T>;
   <R>(selector: Selector<Readonly<T>, R>): R;
 }
-
-// Type for accessing CallableStore as StoreInternal for hooks
-export type StoreInternalFromCallable<Store extends CallableStore<any, any>> =
-  Store extends CallableStore<infer T, any> ? StoreInternal<T> : never;

@@ -1,9 +1,6 @@
 // Primary function for creating new stores
 export { createStore } from './store';
 
-// React integration utilities
-export { useStore } from './hooks/use-store';
-
 // Core types
 export type {
   StoreBuilder,
@@ -11,8 +8,6 @@ export type {
   CallableStore,
   Selector,
   ActionFn,
-  EffectFn,
-  EffectHelpers,
   Listener,
   AsyncState,
   StoreConfig,
