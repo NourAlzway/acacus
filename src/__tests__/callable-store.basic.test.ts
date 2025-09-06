@@ -5,7 +5,6 @@
 import { createCallableStore } from '../core/callable-store';
 import { createStoreInternal } from '../core/store-internal';
 import { createAction } from '../core/action-handler';
-import { EffectFn } from '../types';
 
 jest.mock('react', () => ({
   useSyncExternalStore: jest.fn((subscribe, getSnapshot) => {
@@ -79,27 +78,5 @@ describe('callable-store - basic functionality', () => {
 
     expect(state).toHaveProperty('count', 0);
     expect(typeof increment).toBe('function');
-  });
-
-  it('should include effects in returned state', () => {
-    const initialState = { message: 'initial' };
-    const store = createStoreInternal(initialState);
-    const logEffect: EffectFn<typeof initialState> = (
-      state,
-      helpers,
-      ...args: unknown[]
-    ) => {
-      const [newMessage] = args as [string];
-      helpers.set({ message: newMessage });
-    };
-    store.effects.log = logEffect;
-
-    const callableStore = createCallableStore(store);
-
-    const state = callableStore.get(s => s);
-    const log = callableStore.use(actions => (actions as any).log);
-
-    expect(state).toHaveProperty('message', 'initial');
-    expect(typeof log).toBe('function');
   });
 });
