@@ -24,19 +24,7 @@ afterAll(() => {
 });
 
 describe('store-builder - build methods', () => {
-  it('should return a hook function', () => {
-    // Arrange
-    const initialState = { count: 0 };
-    const builder = new StoreBuilderImpl(initialState);
-
-    // Act
-    const hook = builder.asHook();
-
-    // Assert
-    expect(typeof hook).toBe('function');
-  });
-
-  it('should create hook that returns state and actions', () => {
+  it('should return a callable store from build', () => {
     // Arrange
     const initialState = { count: 0 };
     const builder = new StoreBuilderImpl(initialState).action(
@@ -45,10 +33,12 @@ describe('store-builder - build methods', () => {
     );
 
     // Act
-    const hook = builder.asHook();
+    const store = builder.build();
 
     // Assert
-    expect(typeof hook).toBe('function');
+    expect(typeof store).toBe('object');
+    expect(typeof store.get).toBe('function');
+    expect(typeof store.use).toBe('function');
   });
 
   it('should return callable store', () => {
