@@ -4,14 +4,15 @@ import { StoreBuilderImpl } from './core/store-builder';
 /**
  * Creates a new store with a fluent configuration API
  *
- * This library uses a callable store pattern that simplifies state management:
- * - Access state and actions through destructuring: `const { count, increment } = store()`
- * - Direct method calls like `store.increment()` are not available by design
+ * This library uses a get/use pattern that provides clean and simple state management:
+ * - Access state with `store.get(state => state.property)`
+ * - Access actions with `store.use(actions => actions.actionName)`
  * - Built-in support for async operations and error handling
+ * - Subscribe to state changes with `store.subscribe()`
  *
  * @param initialState The starting state for the store
  * @param config Optional settings for error handling and debugging
- * @returns A store builder that allows chaining of actions and effects
+ * @returns A store builder that allows chaining of actions
  *
  * @example
  * ```typescript
@@ -24,8 +25,9 @@ import { StoreBuilderImpl } from './core/store-builder';
  *   }))
  *   .build();
  *
- * // Usage in React components with destructuring
- * const { count, increment, decrement } = counterStore();
+ * // Usage in React components
+ * const count = counterStore.get(state => state.count);
+ * const increment = counterStore.use(actions => actions.increment);
  * ```
  *
  * **Key behaviors**:

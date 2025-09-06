@@ -131,12 +131,5 @@ export interface StoreBuilder<
     Actions & SafeRecord<K, (...args: Args) => Promise<void>>
   >;
 
-  asHook(): () => Readonly<T> & Actions;
-
   build(): CallableStore<T, Actions>;
-}
-
-export interface StoreHook<T extends ValidStateType> {
-  (): Readonly<T>;
-  <R>(selector: Selector<Readonly<T>, R>): R;
 }
