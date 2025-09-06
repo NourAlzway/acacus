@@ -65,13 +65,15 @@ describe('store-builder - complex scenarios', () => {
       .build();
 
     // Assert
-    const initializedState = store.use(s => ({ initialized: s.initialized }));
+    const initializedState = store.get(s => ({ initialized: s.initialized }));
     expect(initializedState.initialized).toBe(true);
 
-    const { addUser, clearUsers, fetchUsers } = store();
+    const addUser = store.use(actions => actions.addUser);
+    const clearUsers = store.use(actions => actions.clearUsers);
+    const fetchUsers = store.use(actions => actions.fetchUsers);
     addUser({ id: 1, name: 'Test User' });
 
-    const userState = store.use(s => ({ users: s.users, count: s.count }));
+    const userState = store.get(s => ({ users: s.users, count: s.count }));
     expect(userState.users).toHaveLength(1);
     expect(userState.count).toBe(1);
 
@@ -79,11 +81,11 @@ describe('store-builder - complex scenarios', () => {
 
     clearUsers();
 
-    const clearedState = store.use(s => ({ users: s.users, count: s.count }));
+    const clearedState = store.get(s => ({ users: s.users, count: s.count }));
     expect(clearedState.users).toHaveLength(0);
     expect(clearedState.count).toBe(0);
 
-    const finalState = store.use(s => ({
+    const finalState = store.get(s => ({
       users: s.users,
       count: s.count,
       loading: s.loading,

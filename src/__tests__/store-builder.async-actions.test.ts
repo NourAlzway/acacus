@@ -58,7 +58,7 @@ describe('store-builder - async actions', () => {
 
     // Act
     const store = builder.asyncAction('fetchUsers', fetchUsers).build();
-    const { fetchUsers: fetchUsersAction } = store();
+    const fetchUsersAction = store.use(actions => actions.fetchUsers);
 
     // Assert
     await fetchUsersAction();
@@ -78,7 +78,7 @@ describe('store-builder - async actions', () => {
 
     // Act
     const store = builder.asyncAction('fetchUser', fetchUser).build();
-    const { fetchUser: fetchUserAction } = store();
+    const fetchUserAction = store.use(actions => actions.fetchUser);
     await fetchUserAction(123);
 
     // Assert
@@ -100,7 +100,7 @@ describe('store-builder - async actions', () => {
 
     // Act
     const store = builder.asyncAction('failingFetch', failingFetch).build();
-    const { failingFetch: failingFetchAction } = store();
+    const failingFetchAction = store.use(actions => actions.failingFetch);
     await failingFetchAction();
 
     // Assert
@@ -124,7 +124,8 @@ describe('store-builder - async actions', () => {
       .build();
 
     // Assert
-    const { fetchConfig, validateConfig } = store();
+    const fetchConfig = store.use(actions => actions.fetchConfig);
+    const validateConfig = store.use(actions => actions.validateConfig);
 
     await fetchConfig();
     await validateConfig();

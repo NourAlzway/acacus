@@ -34,7 +34,7 @@ describe('store-builder - initialization', () => {
     // Assert
     expect(builder).toBeInstanceOf(StoreBuilderImpl);
     const store = builder.build();
-    const state = store.use(s => s);
+    const state = store.get(s => s);
 
     // Assert
     expect(state).toEqual(initialState);
@@ -54,7 +54,7 @@ describe('store-builder - initialization', () => {
 
     // Assert
     expect(builder).toBeInstanceOf(StoreBuilderImpl);
-    const state = store.use(s => s);
+    const state = store.get(s => s);
 
     // Assert
     expect(state).toEqual(initialState);
@@ -70,7 +70,7 @@ describe('store-builder - initialization', () => {
 
     // Assert
     expect(store).toBeDefined();
-    const state = store.use(s => s);
+    const state = store.get(s => s);
     expect(state).toEqual(initialState);
   });
 });

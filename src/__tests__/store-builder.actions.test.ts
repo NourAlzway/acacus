@@ -57,11 +57,11 @@ describe('store-builder - actions', () => {
     const store = builder.action('increment', incrementAction).build();
 
     // Act
-    const { increment } = store();
+    const increment = store.use(actions => actions.increment);
     increment(5);
 
     // Assert
-    const state = store.use(s => s);
+    const state = store.get(s => s);
     expect(state.count).toBe(5);
   });
 
@@ -84,17 +84,19 @@ describe('store-builder - actions', () => {
       .action('reset', () => ({ count: 0, multiplier: 1 }))
       .build();
 
-    const { increment, setMultiplier, reset } = store();
+    const increment = store.use(actions => actions.increment);
+    const setMultiplier = store.use(actions => actions.setMultiplier);
+    const reset = store.use(actions => actions.reset);
 
     increment(5);
     setMultiplier(2);
 
     // Assert
-    let state = store.use(s => ({ count: s.count, multiplier: s.multiplier }));
+    let state = store.get(s => ({ count: s.count, multiplier: s.multiplier }));
     expect(state).toEqual({ count: 5, multiplier: 2 });
 
     reset();
-    state = store.use(s => ({ count: s.count, multiplier: s.multiplier }));
+    state = store.get(s => ({ count: s.count, multiplier: s.multiplier }));
     expect(state).toEqual({ count: 0, multiplier: 1 });
 
     expect(typeof increment).toBe('function');
@@ -114,11 +116,11 @@ describe('store-builder - actions', () => {
       }))
       .build();
 
-    const { increment } = store();
+    const increment = store.use(actions => actions.increment);
     increment();
 
     // Assert
-    const state = store.use(s => s);
+    const state = store.get(s => s);
     expect(state.count).toBe(1);
   });
 
@@ -139,11 +141,11 @@ describe('store-builder - actions', () => {
       )
       .build();
 
-    const { setPosition } = store();
+    const setPosition = store.use(actions => actions.setPosition);
     setPosition(10, 20, 'point');
 
     // Assert
-    const state = store.use(s => ({ x: s.x, y: s.y, name: s.name }));
+    const state = store.get(s => ({ x: s.x, y: s.y, name: s.name }));
     expect(state).toEqual({ x: 10, y: 20, name: 'point' });
   });
 
@@ -159,20 +161,22 @@ describe('store-builder - actions', () => {
       .action('reset', () => ({ count: 0 }))
       .build();
 
-    const { increment, decrement, reset } = store();
+    const increment = store.use(actions => actions.increment);
+    const decrement = store.use(actions => actions.decrement);
+    const reset = store.use(actions => actions.reset);
 
     increment();
     increment();
     decrement();
 
     // Assert
-    let state = store.use(s => s);
+    let state = store.get(s => s);
     expect(state.count).toBe(1);
 
     reset();
 
     // Assert
-    state = store.use(s => s);
+    state = store.get(s => s);
     expect(state.count).toBe(0);
 
     expect(typeof increment).toBe('function');

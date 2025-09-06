@@ -59,7 +59,7 @@ describe('store-builder - effects', () => {
     const store = builder.effect('init', initEffect).build();
 
     // Assert
-    const state = store.use(s => s);
+    const state = store.get(s => s);
     expect(state.initialized).toBe(true);
   });
 
@@ -78,15 +78,15 @@ describe('store-builder - effects', () => {
 
     // Act
     const store = builder.effect('log', logEffect).build();
-    const storeInstance = store();
 
     // Assert
-    expect(typeof (storeInstance as any).log).toBe('function');
+    const log = store.use(effects => (effects as any).log);
+    expect(typeof log).toBe('function');
 
-    (storeInstance as any).log('updated');
+    log('updated');
 
     // Assert
-    const state = store.use(s => s);
+    const state = store.get(s => s);
     expect(state.message).toBe('updated');
   });
 
@@ -117,7 +117,7 @@ describe('store-builder - effects', () => {
     const store = builder.build();
 
     // Assert
-    const state = store.use(s => s);
+    const state = store.get(s => s);
     expect(state.asyncCompleted).toBe(true);
   });
 
@@ -137,15 +137,15 @@ describe('store-builder - effects', () => {
       .build();
 
     // Assert
-    let state = store.use(s => s);
+    let state = store.get(s => s);
     expect(state.doubled).toBe(0);
 
     // Act
-    const { increment } = store();
+    const increment = store.use(actions => actions.increment);
     increment();
 
     // Assert
-    state = store.use(s => s);
+    state = store.get(s => s);
     expect(state.count).toBe(1);
     expect(state.doubled).toBe(0);
   });

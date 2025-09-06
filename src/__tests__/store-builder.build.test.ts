@@ -60,7 +60,8 @@ describe('store-builder - build methods', () => {
     const store = builder.build();
 
     // Assert
-    expect(typeof store).toBe('function');
+    expect(typeof store).toBe('object');
+    expect(typeof store.get).toBe('function');
     expect(typeof store.use).toBe('function');
     expect(typeof store.subscribe).toBe('function');
   });
@@ -82,11 +83,14 @@ describe('store-builder - build methods', () => {
       .build();
 
     // Assert
-    const storeInstance = store();
+    const increment = store.use(actions => actions.increment);
+    const fetchData = store.use(actions => actions.fetchData);
+    const setReady = store.use(actions => (actions as any).setReady);
+    const state = store.get(s => s);
 
-    expect(typeof storeInstance.increment).toBe('function');
-    expect(typeof storeInstance.fetchData).toBe('function');
-    expect(typeof (storeInstance as any).setReady).toBe('function');
-    expect(storeInstance.ready).toBe(true);
+    expect(typeof increment).toBe('function');
+    expect(typeof fetchData).toBe('function');
+    expect(typeof setReady).toBe('function');
+    expect(state.ready).toBe(true);
   });
 });
