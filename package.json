@@ -22,6 +22,7 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,json,md}\" --end-of-line lf",
     "size": "size-limit",
     "changeset": "changeset",
+    "examples": "cd examples && npm run dev",
     "version-packages": "changeset version",
     "release": "changeset publish",
     "prepare": "husky install"
