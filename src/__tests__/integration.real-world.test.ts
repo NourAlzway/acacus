@@ -68,27 +68,25 @@ describe('integration - real world scenarios', () => {
       })
       .build();
 
-    const {
-      addTodo,
-      toggleTodo,
-      setFilter,
-      clearCompleted,
-      markSaved,
-      updateStats,
-    } = todoStore();
+    const addTodo = todoStore.use(actions => actions.addTodo);
+    const toggleTodo = todoStore.use(actions => actions.toggleTodo);
+    const setFilter = todoStore.use(actions => actions.setFilter);
+    const clearCompleted = todoStore.use(actions => actions.clearCompleted);
+    const markSaved = todoStore.use(actions => actions.markSaved);
+    const updateStats = todoStore.use(actions => actions.updateStats);
 
     addTodo('Learn TypeScript');
     addTodo('Write tests');
     addTodo('Build app');
 
     // Assert
-    let state = todoStore.use(s => s);
+    let state = todoStore.get(s => s);
     expect(state.todos).toHaveLength(3);
     expect(state.nextId).toBe(4);
 
     updateStats();
     // Assert
-    state = todoStore.use(s => s);
+    state = todoStore.get(s => s);
     expect(state.stats.total).toBe(3);
     expect(state.stats.active).toBe(3);
     expect(state.stats.completed).toBe(0);
@@ -97,28 +95,28 @@ describe('integration - real world scenarios', () => {
     toggleTodo(2);
 
     // Assert
-    state = todoStore.use(s => s);
+    state = todoStore.get(s => s);
     expect(state.todos[0].completed).toBe(true);
     expect(state.todos[1].completed).toBe(true);
 
     updateStats();
     // Assert
-    state = todoStore.use(s => s);
+    state = todoStore.get(s => s);
     expect(state.stats.completed).toBe(2);
     expect(state.stats.active).toBe(1);
 
     setFilter('completed');
     // Assert
-    state = todoStore.use(s => s);
+    state = todoStore.get(s => s);
     expect(state.filter).toBe('completed');
 
     clearCompleted();
-    state = todoStore.use(s => s);
+    state = todoStore.get(s => s);
     expect(state.todos).toHaveLength(1);
     expect(state.todos[0].text).toBe('Build app');
 
     markSaved();
-    state = todoStore.use(s => s);
+    state = todoStore.get(s => s);
     expect(state.savedCount).toBe(1);
     expect(state.lastSaved).toBeTruthy();
 
@@ -182,12 +180,13 @@ describe('integration - real world scenarios', () => {
       }))
       .build();
 
-    const { loginSuccess, logout } = authStore();
+    const loginSuccess = authStore.use(actions => actions.loginSuccess);
+    const logout = authStore.use(actions => actions.logout);
 
     loginSuccess('test@example.com', 'password');
 
     // Assert
-    let state = authStore.use(s => s);
+    let state = authStore.get(s => s);
     expect(state.isAuthenticated).toBe(true);
     expect(state.user).toEqual({
       id: 1,
@@ -198,13 +197,13 @@ describe('integration - real world scenarios', () => {
     expect(state.sessionToken).toBe('jwt-token-123');
 
     logout();
-    state = authStore.use(s => s);
+    state = authStore.get(s => s);
     expect(state.isAuthenticated).toBe(false);
     expect(state.user).toBe(null);
     expect(state.sessionToken).toBe(null);
 
     loginSuccess('wrong@email.com', 'wrongpass');
-    state = authStore.use(s => s);
+    state = authStore.get(s => s);
     expect(state.loginAttempts).toBe(1);
     expect(state.lastLoginError).toBe('Invalid credentials');
     expect(state.isAuthenticated).toBe(false);
@@ -292,27 +291,25 @@ describe('integration - real world scenarios', () => {
       })
       .build();
 
-    const {
-      addItem,
-      removeItem,
-      updateQuantity,
-      applyDiscount,
-      clearCart,
-      calculateTotals,
-    } = cartStore();
+    const addItem = cartStore.use(actions => actions.addItem);
+    const removeItem = cartStore.use(actions => actions.removeItem);
+    const updateQuantity = cartStore.use(actions => actions.updateQuantity);
+    const applyDiscount = cartStore.use(actions => actions.applyDiscount);
+    const clearCart = cartStore.use(actions => actions.clearCart);
+    const calculateTotals = cartStore.use(actions => actions.calculateTotals);
 
     addItem({ id: 1, name: 'Widget A', price: 10.0 });
     addItem({ id: 2, name: 'Widget B', price: 15.0 });
     addItem({ id: 1, name: 'Widget A', price: 10.0 });
 
     // Assert
-    let state = cartStore.use(s => s);
+    let state = cartStore.get(s => s);
     expect(state.items).toHaveLength(2);
     expect(state.items[0].quantity).toBe(2);
 
     calculateTotals();
     // Assert
-    state = cartStore.use(s => s);
+    state = cartStore.get(s => s);
     expect(state.total).toBe(35.0);
     expect(state.itemCount).toBe(3);
     expect(state.tax).toBeCloseTo(2.8);
@@ -320,25 +317,25 @@ describe('integration - real world scenarios', () => {
 
     applyDiscount(20);
     calculateTotals();
-    state = cartStore.use(s => s);
+    state = cartStore.get(s => s);
     expect(state.discounts.percentage).toBe(20);
     expect(state.discounts.amount).toBe(7.0);
     expect(state.finalTotal).toBeCloseTo(30.24);
 
     updateQuantity(1, 3);
     calculateTotals();
-    state = cartStore.use(s => s);
+    state = cartStore.get(s => s);
     expect(state.items[0].quantity).toBe(3);
     expect(state.total).toBe(45.0);
 
     removeItem(2);
     calculateTotals();
-    state = cartStore.use(s => s);
+    state = cartStore.get(s => s);
     expect(state.items).toHaveLength(1);
     expect(state.total).toBe(30.0);
 
     clearCart();
-    state = cartStore.use(s => s);
+    state = cartStore.get(s => s);
     expect(state.items).toHaveLength(0);
     expect(state.total).toBe(0);
     expect(state.finalTotal).toBe(0);

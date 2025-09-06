@@ -21,21 +21,23 @@ describe('integration - fluent API', () => {
       .build();
 
     // Act
-    const { increment, decrement, reset } = store();
+    const increment = store.use(actions => actions.increment);
+    const decrement = store.use(actions => actions.decrement);
+    const reset = store.use(actions => actions.reset);
 
     increment();
 
     // Assert
-    expect(store.use(s => s.count)).toBe(1);
+    expect(store.get(s => s.count)).toBe(1);
 
     increment();
-    expect(store.use(s => s.count)).toBe(2);
+    expect(store.get(s => s.count)).toBe(2);
 
     decrement();
-    expect(store.use(s => s.count)).toBe(1);
+    expect(store.get(s => s.count)).toBe(1);
 
     reset();
-    expect(store.use(s => s.count)).toBe(0);
+    expect(store.get(s => s.count)).toBe(0);
 
     expect(typeof increment).toBe('function');
     expect(typeof decrement).toBe('function');
@@ -63,20 +65,22 @@ describe('integration - fluent API', () => {
       .build();
 
     // Act
-    const { increment, addUser, reset } = store();
+    const increment = store.use(actions => actions.increment);
+    const addUser = store.use(actions => actions.addUser);
+    const reset = store.use(actions => actions.reset);
 
     increment();
     addUser('John');
     addUser('Jane');
 
     // Assert
-    let state = store.use(s => s);
+    let state = store.get(s => s);
     expect(state.count).toBe(1);
     expect(state.users).toEqual(['John', 'Jane']);
     expect(state.lastAction).toBe('addUser');
 
     reset();
-    state = store.use(s => s);
+    state = store.get(s => s);
     expect(state.count).toBe(0);
     expect(state.users).toEqual([]);
     expect(state.lastAction).toBe('reset');
@@ -107,14 +111,14 @@ describe('integration - fluent API', () => {
       .build();
 
     // Act
-    let state = store.use(s => s);
+    let state = store.get(s => s);
     expect(state.initialized).toBe(true);
 
-    const { increment } = store();
+    const increment = store.use(actions => actions.increment);
     increment();
 
     // Assert
-    state = store.use(s => s);
+    state = store.get(s => s);
     expect(state.count).toBe(1);
     expect(state.logs).toHaveLength(1);
     expect(state.logs[0]).toContain('Initialized');
@@ -151,17 +155,19 @@ describe('integration - fluent API', () => {
       .build();
 
     // Act
-    let state = store.use(s => s);
+    let state = store.get(s => s);
     expect(state.initialized).toBe(true);
     expect(state.lastAction).toBe('initialized');
 
-    const { increment, addUser, batchAddUsers } = store();
+    const increment = store.use(actions => actions.increment);
+    const addUser = store.use(actions => actions.addUser);
+    const batchAddUsers = store.use(actions => actions.batchAddUsers);
 
     increment();
     addUser({ id: 1, name: 'Manual User' });
 
     // Assert
-    state = store.use(s => s);
+    state = store.get(s => s);
     expect(state.counter).toBe(1);
     expect(state.users).toHaveLength(1);
     expect(state.users[0]).toEqual({ id: 1, name: 'Manual User' });
@@ -172,7 +178,7 @@ describe('integration - fluent API', () => {
     ]);
 
     // Assert
-    state = store.use(s => s);
+    state = store.get(s => s);
     expect(state.users).toHaveLength(3);
     expect(state.users[1]).toEqual({ id: 2, name: 'User Two' });
     expect(state.users[2]).toEqual({ id: 3, name: 'User Three' });

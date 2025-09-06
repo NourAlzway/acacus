@@ -19,7 +19,7 @@ describe('integration - basic store creation', () => {
     const store = createStore(initialState).build();
 
     // Assert
-    const state = store.use(s => s);
+    const state = store.get(s => s);
     expect(state).toEqual(initialState);
   });
 
@@ -34,7 +34,7 @@ describe('integration - basic store creation', () => {
 
     // Assert
     expect(store).toBeDefined();
-    const state = store.use(s => s);
+    const state = store.get(s => s);
     expect(state).toEqual(initialState);
   });
 });

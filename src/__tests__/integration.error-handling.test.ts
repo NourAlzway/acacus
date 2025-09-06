@@ -24,7 +24,7 @@ describe('integration - error handling', () => {
       .build();
 
     // Assert
-    const { errorAction } = store();
+    const errorAction = store.use(actions => actions.errorAction);
 
     expect(() => errorAction()).toThrow('Action error');
     expect(errorHandler).toHaveBeenCalledWith(
@@ -69,12 +69,13 @@ describe('integration - error handling', () => {
       .build();
 
     testStore.subscribe(errorListener);
-    const { increment } = testStore();
+    const increment = testStore.use(actions => actions.increment);
 
     try {
       increment();
-    } catch {
+    } catch (e) {
       // Expected error
+      throw new Error('Listener error', { cause: e as Error });
     }
 
     // Assert
