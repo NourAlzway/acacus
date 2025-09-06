@@ -95,15 +95,35 @@ export interface StoreInternal<T extends ValidStateType> {
   readonly config: Readonly<StoreConfig>;
 }
 
+// Type helpers for async actions
+export type AsyncActionKeys<T> = {
+  [K in keyof T]: T[K] extends AsyncState<any> ? K : never;
+}[keyof T];
+
+export type AsyncActionsOnly<T> = Pick<T, AsyncActionKeys<T>>;
+
+// Hook result types
+export type AsyncHookResult<T> =
+  T extends AsyncState<infer R>
+    ? { loading: boolean; error: Error | null; data: R | null }
+    : never;
+
+// Type helpers for selectors
+export type StateSelector<T, R> = (state: Readonly<T>) => R;
+export type ActionSelector<Actions, R> = (actions: Actions) => R;
+
 export type CallableStore<
   T extends ValidStateType,
   Actions = SafeRecord<string, never>,
 > = {
-  (): Readonly<T> & Actions;
-  <R>(selector: (state: Readonly<T> & Actions) => R): R;
+  get: <R>(stateSelector: (state: Readonly<T>) => R) => R;
+  use: <R>(actionSelector: (actions: Actions) => R) => R;
 
-  use: <R>(selector: (state: Readonly<T> & Actions) => R) => R;
+  // Keep subscription for direct subscriptions
   subscribe: (listener: Listener<T>) => () => void;
+
+  // Add StoreInternal methods for compatibility with useStore
+  getState: () => Readonly<T>;
 } & Omit<StoreInternal<T>, 'getState' | 'setState' | 'subscribe'>;
 
 export interface StoreBuilder<
@@ -137,3 +157,7 @@ export interface StoreHook<T extends ValidStateType> {
   (): Readonly<T>;
   <R>(selector: Selector<Readonly<T>, R>): R;
 }
+
+// Type for accessing CallableStore as StoreInternal for hooks
+export type StoreInternalFromCallable<Store extends CallableStore<any, any>> =
+  Store extends CallableStore<infer T, any> ? StoreInternal<T> : never;
