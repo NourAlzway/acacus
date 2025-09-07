@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.3
+
+### Patch Changes
+
+- dc0fa11: add more examples and update the docs
+
 ## 0.7.2
 
 ### Patch Changes
