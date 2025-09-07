@@ -1,5 +1,7 @@
 # Acacus
 
+![Acacus React State Management Logo](images/acacus-logo.png)
+
 [![npm version](https://badge.fury.io/js/acacus.svg)](https://badge.fury.io/js/acacus)
 [![npm downloads](https://img.shields.io/npm/dm/acacus.svg?style=flat&label=Monthly%20Downloads)](https://www.npmjs.com/package/acacus)
 ![npm downloads](https://img.shields.io/npm/dt/acacus?style=flat&label=Total%20Downloads)
