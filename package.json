@@ -1,6 +1,6 @@
 {
   "name": "acacus",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "type": "module",
   "description": "A React state management library.",
   "main": "dist/index.js",
