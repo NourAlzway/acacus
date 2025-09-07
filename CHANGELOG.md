@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.1
+
+### Patch Changes
+
+- ff82254: add exmaples and clean up the code base
+
 ## 0.7.0
 
 ### Minor Changes
