@@ -1,4 +1,7 @@
-import { useSyncExternalStore } from 'react';
+import { useSyncExternalStoreWithSelector } from './use-sync-external-store-with-selector';
+// Import selector-aware hook without adding runtime dep by reusing React 18 API via fallback
+// Note: React exports useSyncExternalStoreWithSelector from 'use-sync-external-store/shim/with-selector' for non-React envs,
+// but in library context we'll implement a minimal inline selector handling to avoid an extra dependency.
 import {
   CallableStore,
   StoreInternal,
@@ -29,12 +32,16 @@ export function createCallableStore<T extends ValidStateType, Actions>(
 
       // Try to use React hooks for reactive subscriptions
       try {
-        const state = useSyncExternalStore(
+        // Selector-aware subscription prevents re-renders when selected slice is equal
+        const equality =
+          (store.config.equalityFn as (a: R, b: R) => boolean) ?? Object.is;
+        return useSyncExternalStoreWithSelector(
           store.subscribe,
           store.getState,
-          store.getState
+          store.getState,
+          stateSelector,
+          equality
         );
-        return stateSelector(state);
       } catch {
         // If hooks cannot be used (outside render), return a non-reactive snapshot
         const state = store.getState();

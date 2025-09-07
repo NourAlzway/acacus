@@ -69,6 +69,8 @@ export interface StoreConfig {
   readonly devMode?: boolean;
   readonly batchUpdates?: boolean;
   readonly enablePerformanceTracking?: boolean;
+  // Optional equality function used when selecting slices in React to avoid unnecessary re-renders
+  readonly equalityFn?: <S>(a: S, b: S) => boolean;
 }
 
 export interface StoreInternal<T extends ValidStateType> {
