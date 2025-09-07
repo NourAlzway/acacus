@@ -9,6 +9,9 @@ import {
   isFunction,
   StateSelector,
   ActionSelector,
+  AsyncActionKeys,
+  GetAsyncStatusResult,
+  AsyncState,
 } from '../types';
 
 /**
@@ -62,6 +65,51 @@ export function createCallableStore<T extends ValidStateType, Actions>(
       }
       const actions = createActions();
       return actionSelector(actions);
+    },
+
+    // Type-safe async status access
+    getAsyncStatus: <K extends AsyncActionKeys<T>>(
+      asyncActionName: K
+    ): GetAsyncStatusResult<T, K> => {
+      // Create a selector that extracts the async state
+      const asyncStateSelector = (state: Readonly<T>) => {
+        const asyncState = state[asyncActionName] as
+          | AsyncState<any>
+          | undefined;
+        // Return default async state structure if undefined
+        return asyncState || { loading: false, error: null, data: null };
+      };
+
+      // Try to use React hooks for reactive subscriptions
+      try {
+        const equality =
+          (store.config.equalityFn as (
+            a: AsyncState<any>,
+            b: AsyncState<any>
+          ) => boolean) ??
+          ((a, b) =>
+            a.loading === b.loading &&
+            a.error === b.error &&
+            a.data === b.data);
+
+        return useSyncExternalStoreWithSelector(
+          store.subscribe,
+          store.getState,
+          store.getState,
+          asyncStateSelector,
+          equality
+        ) as GetAsyncStatusResult<T, K>;
+      } catch {
+        // If hooks cannot be used (outside render), return a non-reactive snapshot
+        const state = store.getState();
+        if (process.env.NODE_ENV !== 'production') {
+          // eslint-disable-next-line no-console
+          console.warn(
+            '[Store Warning] store.getAsyncStatus() could not use React hooks (likely called outside render). Returning a non-reactive snapshot.'
+          );
+        }
+        return asyncStateSelector(state) as GetAsyncStatusResult<T, K>;
+      }
     },
 
     // Keep subscription for direct subscriptions

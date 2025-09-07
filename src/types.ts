@@ -92,6 +92,15 @@ export type AsyncActionKeys<T> = {
 
 export type AsyncActionsOnly<T> = Pick<T, AsyncActionKeys<T>>;
 
+// Helper to extract the data type from AsyncState
+export type ExtractAsyncData<T> = T extends AsyncState<infer R> ? R : never;
+
+// Helper to get async status with proper typing
+export type GetAsyncStatusResult<T, K extends AsyncActionKeys<T>> =
+  T[K] extends AsyncState<infer R>
+    ? { loading: boolean; error: Error | null; data: R | null }
+    : never;
+
 // Hook result types
 export type AsyncHookResult<T> =
   T extends AsyncState<infer R>
@@ -108,6 +117,11 @@ export type CallableStore<
 > = {
   get: <R>(stateSelector: (state: Readonly<T>) => R) => R;
   use: <R>(actionSelector: (actions: Actions) => R) => R;
+
+  // Type-safe async status access
+  getAsyncStatus: <K extends AsyncActionKeys<T>>(
+    asyncActionName: K
+  ) => GetAsyncStatusResult<T, K>;
 
   // Keep subscription for direct subscriptions
   subscribe: (listener: Listener<T>) => () => void;
