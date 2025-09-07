@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.2
+
+### Patch Changes
+
+- 82a21d2: imporve subscription performance
+
 ## 0.7.1
 
 ### Patch Changes
